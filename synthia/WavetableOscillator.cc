@@ -59,6 +59,7 @@ namespace Synthia {
         if(!_soundFile)
         {
             //_soundFile = new SoundFile();
+            return;
         }
         
         _soundFile->loadWav(filename);
@@ -67,7 +68,7 @@ namespace Synthia {
         _invNumSamples = 1.0f / (float)_numSamples;
         
         // Just use the left channel for now
-        _sampleArray = _soundFile->samples()[0];
+        _sampleArray = _soundFile->samples();
         
         doPrecalculation(isSingleCycle);
     }

@@ -31,7 +31,8 @@ namespace Synthia
     void SoundLoop::init(SynthContext *ctx)
     {
         _ctx = ctx;
-        sampIdx = 0;
+        _shouldLoop = true;
+        _playing = false;
     }
 
     void SoundLoop::loadFile(string filePath)
@@ -43,11 +44,70 @@ namespace Synthia
 
     float SoundLoop::tick(int channel)
     {
-        float samp = _soundFile->samples()[channel][sampIdx[channel]];
+        float samp = _soundFile->samples()[(_sampIdx[channel] * _soundFile->channels()) + channel];
 
-        sampIdx[channel]++;
-        if(sampIdx[channel] >= _soundFile->length() - 1)
-            sampIdx[channel] -= _soundFile->length();
+        _sampIdx[channel]++;
+        if(_sampIdx[channel] >= _soundFile->length() - 1)
+            _sampIdx[channel] -= _soundFile->length();
         return samp;
+    }
+
+    Frames& SoundLoop::tick(Frames& frames) {
+        //assert(frames.numChannels() == _soundFile->channels());
+        
+        if(!_playing) {
+            return frames;
+        }
+
+        for(int i = 0; i < frames.numSamples(); i++)
+        {
+           
+            if(_soundFile->channels() < frames.numChannels()) {
+                float samp = _soundFile->samples()[_sampIdx[0]];
+                _sampIdx[0]++;
+                if(_sampIdx[0] == _soundFile->length()) {
+                    _sampIdx[0] -= _soundFile->length();
+                    
+                    if(!_shouldLoop)
+                    {
+                        _playing = false;
+                    }
+                }
+
+                for(unsigned int channel = 0; channel < frames.numChannels(); channel++)
+                {
+                    if(!_playing) {
+                        frames[(i * frames.numChannels()) + channel] = 0.0f;
+                    } else {
+                        frames[(i * frames.numChannels()) + channel] = samp;
+                    }
+                }
+            }
+            else {
+                for(unsigned int channel = 0; channel < frames.numChannels(); channel++)
+                {
+                    if(!_playing) {
+                        frames[(i * frames.numChannels()) + channel] = 0.0f;
+                    } else {
+                    
+                        float samp = _soundFile->samples()[(_sampIdx[channel] * _soundFile->channels()) + channel];
+
+                        _sampIdx[channel]++;
+                        if(_sampIdx[channel] == _soundFile->length()) {
+                            _sampIdx[channel] -= _soundFile->length();
+                            
+                            if(!_shouldLoop)
+                            {
+                                _playing = false;
+                            }
+                        }
+
+                        frames[(i * frames.numChannels()) + channel] = samp;
+                    }
+                }
+            }
+        }
+
+        return frames;
     }
 }

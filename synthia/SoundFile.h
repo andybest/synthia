@@ -50,12 +50,15 @@ namespace Synthia
         SoundFile();
         ~SoundFile();
         void loadWav(string path);
-        inline float **samples() { return _samples; }
+        inline float *samples() { return _samples; }
         inline int length() { return _length; }
         inline int channels() { return _channels; }
-        
+        inline int sampleRate() { return _sampleRate; }
+
+        void loadSamples(float *samples, int numChannels, int numSamples, int sampleRate);
+
     private:
-        float **_samples;
+        float *_samples;
         int _length;
         int _channels;
         int _sampleRate;

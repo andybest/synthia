@@ -35,17 +35,55 @@ namespace Synthia
 {
     class SoundLoop : public Generator
     {
-
     public:
+        ~SoundLoop() {
+            if(_soundFile != nullptr)
+                delete _soundFile;
+        }
         void loadFile(string filePath);
 
         void init(SynthContext *ctx);
 
         float tick(int channel);
 
+        Frames &tick(Frames &frames);
+
+        void loadSamples(float *samples, int numChannels, int numSamples)
+        {
+            if(_soundFile != nullptr)
+                delete _soundFile;
+            
+            _soundFile = new SoundFile();
+            _soundFile->loadSamples(samples, numChannels, numSamples, (int) _ctx->sampleRate());
+            
+            //if(_sampIdx != nullptr)
+                delete [] _sampIdx;
+            _sampIdx = new int[_soundFile->channels()];
+        }
+        
+        bool isPlaying() {
+            return _playing;
+        }
+        
+        void setPlaying(bool playing) {
+            _playing = playing;
+            
+            // Reset the sample to the beginning
+            for(int i = 0; i < _soundFile->channels(); i++)
+            {
+                _sampIdx[i] = 0;
+            }
+        }
+        
+        void setLoops(bool loops) {
+            _shouldLoop = loops;
+        }
+
     private:
         SoundFile *_soundFile;
-        int *sampIdx;
+        int       *_sampIdx;
+        bool      _playing;
+        bool      _shouldLoop;
     };
 }
 

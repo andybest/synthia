@@ -25,8 +25,10 @@ SOFTWARE.
 */
 
 
+#include <stdint.h>
 #include "SObject.h"
 #include "SynthContext.h"
+#include "Frames.h"
 
 #ifndef __Generator_H_
 #define __Generator_H_
@@ -36,28 +38,33 @@ namespace Synthia
     class Generator : public SObject
     {
     public:
-        virtual ~Generator() {}
-        virtual void init(SynthContext *ctx) = 0;
-        virtual float tick(int channel) = 0;
-        
-        void tick(int channel, float *buffer, int bufLen)
+        virtual ~Generator()
         {
-            for(int i = 0; i < bufLen; i++)
-            {
-                buffer[i] = tick(channel);
-            }
         }
+
+        virtual void init(SynthContext *ctx) = 0;
+
+        virtual Frames& tick(Frames &frames) = 0;
+
+        virtual uint32_t numChannels()
+        {
+            return 1;
+        };
 
     protected:
         SynthContext *_ctx;
     };
-    
-    
+
+
     class PitchedGenerator : public Generator
     {
     public:
-        virtual ~PitchedGenerator() {}
+        virtual ~PitchedGenerator()
+        {
+        }
+
         virtual void setFrequency(float freq) = 0;
+
     protected:
         float _frequency;
     };

@@ -24,19 +24,44 @@ SOFTWARE.
 
 */
 
+#include <cmath>
 #include "Generator.h"
 
-namespace Synthia {
-    
+namespace Synthia
+{
+
     class SineOscillator : public PitchedGenerator
     {
     public:
         void init(SynthContext *ctx);
+
         void setFrequency(float freq);
+
         float tick(int channel);
-        
+
+        inline virtual Frames &tick(Frames &frames)
+        {
+            for (unsigned int i = 0; i < frames.numSamples(); i++)
+            {
+                float samp = sinf(_phase);
+
+                _phase += _tickStep;
+
+                if (_phase > M_PI * 2)
+                    _phase -= M_PI * 2;
+
+                for (unsigned int channel = 0; channel < frames.numChannels(); channel++)
+                {
+                    frames[(i * frames.numChannels()) + channel] = samp;
+                }
+            }
+
+            return frames;
+        }
+
     private:
         float _phase;
         float _tickStep;
+        float _lastSamp;
     };
 }
