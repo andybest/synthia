@@ -25,11 +25,12 @@ SOFTWARE.
 */
 
 
-#include "SObject.h"
+
 
 #ifndef __SynthContext_H_
 #define __SynthContext_H_
 
+#include "SObject.h"
 
 namespace Synthia
 {
