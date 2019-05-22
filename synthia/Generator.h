@@ -44,6 +44,8 @@ namespace Synthia
 
         virtual void init(SynthContext *ctx) = 0;
 
+        virtual double tick() = 0;
+
         virtual Frames& tick(Frames &frames) = 0;
 
         virtual uint32_t numChannels()

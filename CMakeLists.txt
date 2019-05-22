@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.11)
 project(Synthia)
 
 set(CMAKE_CXX_STANDARD 17)
@@ -19,7 +19,7 @@ set(SYNTHIA_SOURCES
         #synthia/SoundLoop.cc
         #synthia/SwitchableWavetableOscillator.cc
         synthia/SynthContext.cc
-        synthia/SynthiaUtils.cc)
+        synthia/SynthiaUtils.cc synthia/PolyBlepOscillator.cpp synthia/PolyBlepOscillator.h)
         #synthia/WavetableOscillator.cc)
 
 add_library(synthia ${SYNTHIA_SOURCES})
